@@ -9,3 +9,6 @@ print test.sort(lambda x, y: cmp(len(str(x).lstrip('-')), len(str(y).lstrip('-')
 print str(test[2]).strip('\'-\'')
 
 #filter(lambda a: a != '-', test[2])
+
+print 'lol ' + '-'*10
+print '-'*10

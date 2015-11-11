@@ -178,8 +178,13 @@ class SmithWaterman:
 
 #merges sequence2 onto the end of sequence1
 def mergeSequences(sequence1, sequence2):
-   
-
+    for i in range(min(len(sequence1), len(sequence2))):
+        # print 'a > ' + str(sequence1[i + (len(sequence1) - min(len(sequence1), len(sequence2))):]) + ', b > ' + str(sequence2[:- (len(sequence2) - min(len(sequence1), len(sequence2))) - i ])
+        if sequence1[i + (len(sequence1) - min(len(sequence1), len(sequence2))):] == sequence2[:- (len(sequence2) - min(len(sequence1), len(sequence2))) - i ]:
+            # print 'merging ' + str(sequence2[- (len(sequence2) - min(len(sequence1), len(sequence2))) - i:])
+            return sequence1 + sequence2[- (len(sequence2) - min(len(sequence1), len(sequence2))) - i:]
+    # print 'flat merging ' + str(sequence1 + sequence2)
+    return sequence1 + sequence2
 
 # The main code:
 
@@ -190,31 +195,41 @@ with open(sys.argv[1]) as f:
 #Print template sequence and other sequences
 print ('\nTemplate sequence: ' + sequences[0].rstrip())
 for i in range(len(sequences))[1:]:
+    if (str(sequences[i]) == '\n'): # Check for new lines
+        del sequences[i]
+        continue
     print ('Sequence ' + str(i) + ': ' + sequences[i].rstrip())
-print '\n'
+print '\n',
 
-#Locally align...
+# Locally align...
 print sequences[0].rstrip()
 allAlignments = []
 
-# Run local alignments
 for i in range(len(sequences))[1:]:
     nw = SmithWaterman(sequences[0].rstrip(), sequences[i].rstrip(), -1, -1, -3, 1) # Alter these parameters to change scoring schema
     nw.align()
     #nw.outputMatrices()
     allAlignments.extend(nw.outputAlignments())
 
+# ... and remove duplicates...
+for i in range(len(allAlignments)):
+    allAlignments[i] = (allAlignments[i].rstrip('-')).upper()
+allAlignments = list(set(allAlignments))
+
 # ... and sort and print
-(allAlignments).sort(lambda y, x: cmp(len(x.lstrip('-')), len(y.lstrip('-'))))
+(allAlignments).sort(lambda x, y: cmp(x.count('-'), y.count('-')))
 for item in allAlignments:
-    print item
+    print item + '-' * (len(sequences[0]) - len(item) - 1)
 
 # Merge local alignments
-print 'Flattening: '
+print ('\nTemplate sequence:\t' + sequences[0].rstrip()),
+print '\nNew sequence:\t\t',
 mergedSequence = list(allAlignments[0].strip('-')) #put first sequence as starting point, removing indels
 for i in range(1,len(allAlignments)):
     targetSequence = list(allAlignments[i].strip('-'))
+    # print mergedSequence
     mergedSequence = mergeSequences(mergedSequence, targetSequence)
-    
-#print sequences[0].rstrip()
+
+# print sequences[0],
+# print mergedSequence
 print (''.join(mergedSequence)).upper()

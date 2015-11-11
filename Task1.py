@@ -101,7 +101,6 @@ class SmithWaterman:
 
     def recurseTree(self, d, a, tailTop, tailBottom):
         if ((d == 0 and a == 0)):
-            print("\n+\n")
 
             finalA = tailTop
             finalB = tailBottom
@@ -163,12 +162,10 @@ class SmithWaterman:
     def outputAlignments(self):
         maxval, i, j = max((item, i, j)  for i, row in enumerate(self.opt) for j, item in enumerate(row))
 
-        # print ('\nMax. value : ' + str(maxval) + '\n')
-
         for i in range (1, len(self.sequenceA)+1):
             for j in range (1, len(self.sequenceB)+1):
                 if (self.opt[i][j] == maxval):
-                    print('found at: (' + str(i) + ', ' + str(j) + ').')
+                    # print('Found at: (' + str(i) + ', ' + str(j) + ').')
                     restofA = self.sequenceA[i:]
                     restofB = self.sequenceB[j:]
 
@@ -185,8 +182,6 @@ class SmithWaterman:
 
 with open(sys.argv[1]) as f:
     sequences = f.readlines()
-    #sA = f.readline().rstrip()
-    #sB = f.readline().rstrip()
 
 for i in range(len(sequences))[1::2]:
     print ('\nSequence 1: ' + sequences[i-1].rstrip())
@@ -194,5 +189,7 @@ for i in range(len(sequences))[1::2]:
 
     nw = SmithWaterman(sequences[i-1].rstrip(), sequences[i].rstrip(), -1, -1, -3, 1) # Alter these parameters to change scoring schema
     nw.align()
-    nw.outputMatrices()
+    #nw.outputMatrices()
     nw.outputAlignments()
+
+    print '\n----------------------------------------------'
