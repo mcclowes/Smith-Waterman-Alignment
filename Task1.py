@@ -101,7 +101,6 @@ class SmithWaterman:
 
     def recurseTree(self, d, a, tailTop, tailBottom):
         if ((d == 0 and a == 0)):
-
             finalA = tailTop
             finalB = tailBottom
 
@@ -126,10 +125,9 @@ class SmithWaterman:
             #Print alignment
             print finalA
             print finalB
+            print ''
 
         else:
-            #print('Currently at: (' + str(d) + ', ' + str(a) + ').')
-
             tc = ''
             if (d >= 0):
                 tc = self.sequenceA[d-1]
@@ -144,9 +142,6 @@ class SmithWaterman:
                 restofB = (self.sequenceB[0:a])
                 self.recurseTree(0, 0, restofA + tailTop, restofB + tailBottom)
                 return
-
-                #Should this be elsed?
-
             
             if ((self.dir[d][a] & self.LEFT) == self.LEFT): # Left
                 self.recurseTree(d, a - 1, '-' + tailTop, bc + tailBottom)
@@ -157,7 +152,7 @@ class SmithWaterman:
             if ((self.dir[d][a] & self.UP) == self.UP): # Right
                 self.recurseTree(d - 1, a, tc + tailTop, '-' + tailBottom)
 
-        # end of recurse tree
+        # End of recurse tree
 
     def outputAlignments(self):
         maxval, i, j = max((item, i, j)  for i, row in enumerate(self.opt) for j, item in enumerate(row))
@@ -165,7 +160,6 @@ class SmithWaterman:
         for i in range (1, len(self.sequenceA)+1):
             for j in range (1, len(self.sequenceB)+1):
                 if (self.opt[i][j] == maxval):
-                    # print('Found at: (' + str(i) + ', ' + str(j) + ').')
                     restofA = self.sequenceA[i:]
                     restofB = self.sequenceB[j:]
 
@@ -175,7 +169,7 @@ class SmithWaterman:
                     while (len(restofA) > len(restofB)):
                         restofB = restofB + '-'
 
-                    #Begin local alignment
+                    # Begin local alignment
                     self.recurseTree(i, j, restofA, restofB) #(including the rest of the genome around it)
 
 # The main code:
@@ -192,4 +186,6 @@ for i in range(len(sequences))[1::2]:
     #nw.outputMatrices()
     nw.outputAlignments()
 
-    print '\n----------------------------------------------'
+    print '..............................................................................'
+
+print '' # For formatting

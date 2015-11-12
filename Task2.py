@@ -10,8 +10,7 @@ class SmithWaterman:
         self.delete = d
         self.substitution = s
         self.match = m
-
-        self.alignments = []
+        self.alignments = [] #tracks all local alignments
         
         self.opt = [[0 for x in range(len(self.sequenceB)+1)] for x in range(len(self.sequenceA)+1)]
         self.dir = [[0 for x in range(len(self.sequenceB)+1)] for x in range(len(self.sequenceA)+1)]
@@ -40,6 +39,7 @@ class SmithWaterman:
         # Now compute the rest of the cells
         for i in range (1, len(self.sequenceA)+1):
             for j in range (1, len(self.sequenceB)+1):
+            	#Set costs for each direction
                 scoreDiag = self.opt[i - 1][j - 1]
                 if (self.sequenceA[i-1] == self.sequenceB[j-1]):
                     scoreDiag += self.match
@@ -54,10 +54,13 @@ class SmithWaterman:
 
                 if (self.opt[i][j] == scoreLeft): # Left is max and not 0
                     self.dir[i][j] += self.LEFT
+                
                 if (self.opt[i][j] == scoreDiag): # Diagonal is max and not 0
                     self.dir[i][j] += self.DIAGONAL
+                
                 if (self.opt[i][j] == scoreUp): # Diagonal is max and not 0
                     self.dir[i][j] += self.UP
+                
                 if (self.opt[i][j] == 0):
                     self.dir[i][j] += self.JUMP
                 # end of align
@@ -120,13 +123,9 @@ class SmithWaterman:
             finalA = ''.join(finalA)
             finalB = ''.join(finalB)
 
-            #Print alignment
-            #print finalA
-            #print finalB
-
             self.alignments.append(finalB)
-
             return
+
         else:
             tc = ''
             if (d >= 0):
@@ -143,7 +142,6 @@ class SmithWaterman:
                 self.recurseTree(0, 0, restofA + tailTop, restofB + tailBottom)
                 return
 
-            #Should this be elsed?
             if ((self.dir[d][a] & self.LEFT) == self.LEFT): # Left
                 self.recurseTree(d, a - 1, '-' + tailTop, bc + tailBottom)
             
@@ -153,7 +151,7 @@ class SmithWaterman:
             if ((self.dir[d][a] & self.UP) == self.UP): # Right
                 self.recurseTree(d - 1, a, tc + tailTop, '-' + tailBottom)
 
-        # end of recurse tree
+        # End of recurse tree
 
     def outputAlignments(self):
         maxval, i, j = max((item, i, j)  for i, row in enumerate(self.opt) for j, item in enumerate(row))
@@ -161,7 +159,6 @@ class SmithWaterman:
         for i in range(len(self.sequenceA)+1)[-1::-1]:
             for j in range(len(self.sequenceB)+1)[-1::-1]:
                 if (self.opt[i][j] == maxval):
-                    # print('found at: (' + str(i) + ', ' + str(j) + ').')
                     restofA = self.sequenceA[i:]
                     restofB = self.sequenceB[j:]
 
@@ -179,11 +176,8 @@ class SmithWaterman:
 #merges sequence2 onto the end of sequence1
 def mergeSequences(sequence1, sequence2):
     for i in range(min(len(sequence1), len(sequence2))):
-        # print 'a > ' + str(sequence1[i + (len(sequence1) - min(len(sequence1), len(sequence2))):]) + ', b > ' + str(sequence2[:- (len(sequence2) - min(len(sequence1), len(sequence2))) - i ])
         if sequence1[i + (len(sequence1) - min(len(sequence1), len(sequence2))):] == sequence2[:- (len(sequence2) - min(len(sequence1), len(sequence2))) - i ]:
-            # print 'merging ' + str(sequence2[- (len(sequence2) - min(len(sequence1), len(sequence2))) - i:])
             return sequence1 + sequence2[- (len(sequence2) - min(len(sequence1), len(sequence2))) - i:]
-    # print 'flat merging ' + str(sequence1 + sequence2)
     return sequence1 + sequence2
 
 # The main code:
@@ -227,9 +221,7 @@ print '\nNew sequence:\t\t',
 mergedSequence = list(allAlignments[0].strip('-')) #put first sequence as starting point, removing indels
 for i in range(1,len(allAlignments)):
     targetSequence = list(allAlignments[i].strip('-'))
-    # print mergedSequence
     mergedSequence = mergeSequences(mergedSequence, targetSequence)
 
-# print sequences[0],
-# print mergedSequence
 print (''.join(mergedSequence)).upper()
+print '\n..............................................................................\n' # Formatting
